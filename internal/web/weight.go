@@ -23,17 +23,23 @@ func addWeightHandler(c *gin.Context) {
 
 	db.InsertW(appConfig.DBPath, w)
 
-	c.Redirect(http.StatusFound, c.Request.Header["Referer"][0])
+	referer := c.Request.Referer()
+	if referer == "" {
+		referer = "/"
+	}
+	c.Redirect(http.StatusFound, referer)
+}
+
+func deleteWeightHandler(c *gin.Context) {
+	idStr := c.PostForm("id")
+	id, _ := strconv.Atoi(idStr)
+	db.DeleteW(appConfig.DBPath, id)
+	c.Redirect(http.StatusFound, "/weight/")
 }
 
 func weightHandler(c *gin.Context) {
 	var guiData models.GuiData
 
-	idStr, ok := c.GetQuery("del")
-	if ok {
-		id, _ := strconv.Atoi(idStr)
-		db.DeleteW(appConfig.DBPath, id)
-	}
 	exData.Weight = db.SelectW(appConfig.DBPath)
 
 	guiData.Config = appConfig

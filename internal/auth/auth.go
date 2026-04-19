@@ -18,19 +18,25 @@ func Auth(conf *Conf) gin.HandlerFunc {
 
 		sessionToken := getTokenFromCookie(c)
 
+		sessionMu.RLock()
 		userSession, exists := allSessions[sessionToken]
+		sessionMu.RUnlock()
+
 		if !exists {
 			c.Redirect(http.StatusFound, "/login/")
 			return
 		}
 		if userSession.Before(time.Now()) {
+			sessionMu.Lock()
 			delete(allSessions, sessionToken)
+			sessionMu.Unlock()
 			c.Redirect(http.StatusFound, "/login/")
 			return
 		}
 
-		userSession = time.Now().Add(conf.Expire)
-		allSessions[sessionToken] = userSession
+		sessionMu.Lock()
+		allSessions[sessionToken] = time.Now().Add(conf.Expire)
+		sessionMu.Unlock()
 
 		c.Next()
 	}

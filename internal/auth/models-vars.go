@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Conf struct {
 	Expire   time.Duration
 }
 
+var sessionMu sync.RWMutex
 var allSessions = map[string]time.Time{}
 
-var cookieName = "exersisediary_session_token"
+var cookieName = "exercisediary_session_token"

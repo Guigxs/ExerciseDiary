@@ -1,25 +1,40 @@
-version: "3"
+# Offline/air-gapped variant: serves Bootstrap/Chart.js from a local node-bootstrap container
+# Replace YOUR_SERVER_IP with your actual host IP or DNS name before deploying.
 services:
   node-bootstrap:
     image: aceberg/node-bootstrap
     restart: unless-stopped
     ports:
-    - 8850:8850
+      - "8850:8850"
     volumes:
-    - ~/.dockerdata/icons:/app/icons  # For local icons
+      - ~/.dockerdata/icons:/app/icons  # optional: local icons
+
   exdiary:
-    image: aceberg/exercisediary
+    build: .
+    image: exercisediary:local
     restart: unless-stopped
     ports:
-    - 8851:8851
-    command: "-n http://YOUR_IP:8850" # Put your server IP or DNS name here
+      - "8851:8851"
+    command: ["-n", "http://YOUR_SERVER_IP:8850"]
     depends_on:
       - node-bootstrap
     volumes:
-    - ~/.dockerdata/ExerciseDiary:/data/ExerciseDiary       # app data (set your own path instead of dockerdata)
+      - exdiary-data:/data/ExerciseDiary
     environment:
-      TZ: Asia/Novosibirsk    # required, default ""
-      HOST: "0.0.0.0"         # optional, default: 0.0.0.0
-      PORT: "8851"            # optional, default: 8851
-      THEME: "grass"          # optional, default: grass
-      COLOR: "light"          # optional, default: light
+      TZ: "Europe/Paris"        # set your server timezone
+      HOST: "0.0.0.0"
+      PORT: "8851"
+      THEME: "grass"
+      COLOR: "light"
+      HEATCOLOR: "#03a70c"
+      DATEFORMAT: "DD/MM/YYYY"
+      PAGESTEP: "10"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8851/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  exdiary-data:

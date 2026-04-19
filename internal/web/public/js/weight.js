@@ -8,7 +8,7 @@ function setToday() {
 
 function addWeight(i, date, weight, id) {
 
-    html_code = '<tr><td style="opacity: 45%;">'+i+'.</td><td>'+date+'</td><td>'+weight+'</td><td><a href="/weight/?del='+id+'"><button class="btn del-set-button" title="Delete" ><i class="bi bi-x-square"></i></button></a></td></tr>';
+    html_code = '<tr><td style="opacity: 45%;">'+i+'.</td><td>'+date+'</td><td>'+weight+'</td><td><form action="/weight/del/" method="post"><input type="hidden" name="id" value="'+id+'"><button type="submit" class="btn del-set-button" title="Delete"><i class="bi bi-x-square"></i></button></form></td></tr>';
 
     document.getElementById('weightList').insertAdjacentHTML('beforeend', html_code);
 };

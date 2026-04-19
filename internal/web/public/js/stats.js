@@ -1,17 +1,51 @@
 var sChart = null;
 var sOffset = 0;
 
-function addSet(i, date, reps, weight) {
+function formatDate(dateStr, fmt) {
+    if (!dateStr || dateStr.length < 10) return dateStr;
+    const y = dateStr.substring(0, 4);
+    const m = dateStr.substring(5, 7);
+    const d = dateStr.substring(8, 10);
+    if (fmt === 'MM/DD/YYYY') return m + '/' + d + '/' + y;
+    if (fmt === 'YYYY-MM-DD') return y + '-' + m + '-' + d;
+    return d + '/' + m + '/' + y; // default DD/MM/YYYY
+}
 
-    html_code = '<tr><td style="opacity: 45%;">'+i+'.</td><td>'+date+'</td><td>'+reps+'</td><td>'+weight+'</td></tr>';
-
+function addSet(i, date, reps, weight, dateFmt) {
+    let displayDate = formatDate(date, dateFmt);
+    html_code = '<tr><td style="opacity: 45%;">'+i+'.</td><td>'+displayDate+'</td><td>'+reps+'</td><td>'+weight+'</td></tr>';
     document.getElementById('stats-table').insertAdjacentHTML('beforeend', html_code);
 };
 
+// Aggregate entries by date: sum reps, average weight
+function aggregateByDate(slice) {
+    let map = {};
+    let order = [];
+    for (let i = 0; i < slice.length; i++) {
+        let date = slice[i].Date;
+        let reps = slice[i].Reps;
+        let w = parseFloat(slice[i].Weight);
+        if (!map[date]) {
+            map[date] = { reps: 0, weightSum: 0, count: 0 };
+            order.push(date);
+        }
+        map[date].reps += reps;
+        map[date].weightSum += w;
+        map[date].count += 1;
+    }
+    let dates = [], reps = [], ws = [];
+    for (let i = 0; i < order.length; i++) {
+        let d = order[i];
+        dates.push(d);
+        reps.push(map[d].reps);
+        ws.push(parseFloat((map[d].weightSum / map[d].count).toFixed(4)));
+    }
+    return { dates, reps, ws };
+}
 
-function setStatsPage(sets, hcolor, off, step) {
+function setStatsPage(sets, hcolor, off, step, dateFmt) {
     let start = 0, end = 0;
-    let dates = [], ws = [], reps = [], exs = []; 
+    let exs = []; 
 
     let ex = document.getElementById("ex-value").value;
     for (let i = 0; i < sets.length; i++) {
@@ -42,17 +76,19 @@ function setStatsPage(sets, hcolor, off, step) {
 
     document.getElementById('stats-table').innerHTML = "";
 
+    let pageSlice = exs.slice(start, end);
 
-    for (let i = start ; i < end; i++) {
-        addSet(i+1, exs[i].Date, exs[i].Reps, exs[i].Weight);
-
-        dates.push(exs[i].Date);
-        reps.push(exs[i].Reps);
-        ws.push(exs[i].Weight);
+    // Table: individual rows
+    for (let i = 0; i < pageSlice.length; i++) {
+        addSet(start + i + 1, pageSlice[i].Date, pageSlice[i].Reps, pageSlice[i].Weight, dateFmt);
     };
 
-    statsChart('stats-reps', dates, reps, hcolor, true);
-    weightChart('stats-weight', dates, ws, hcolor, true);
+    // Charts: aggregate same-day entries
+    let agg = aggregateByDate(pageSlice);
+    let chartDates = agg.dates.map(function(d) { return formatDate(d, dateFmt); });
+
+    statsChart('stats-reps', chartDates, agg.reps, hcolor, true);
+    weightChart('stats-weight', chartDates, agg.ws, hcolor, true);
 };
 
 function statsChart(id, dates, ws, wcolor, xticks) {

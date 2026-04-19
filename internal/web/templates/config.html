@@ -46,6 +46,15 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>Date Format</td>
+                    <td><select name="dateformat" class="form-select">
+                        <option selected>{{ .Config.DateFormat }}</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select></td>
+                </tr>
+                <tr>
                     <td>Page Step<button type="button" class="btn tip-button" mytitle="How many items to show on one page (for Weight and Stats)">
                         <i class="bi bi-question-circle"></i>
                     </button></td>

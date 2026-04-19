@@ -1,68 +1,164 @@
 {{ define "exercise.html" }}
-
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <body>
-    <div class="container-lg mt-4">
-    <div class="row">
-        <div class="col-md mb-4">
-        <div class="card border-primary">
-            <div class="card-header">Exercise</div>
-        <div class="card-body table-responsive">
-        <table class="table table-borderless">
-            <form action="/exercise/" method="post">
-                <input name="id" type="hidden" value="{{ .OneEx.ID }}">
-                <tr>
-                    <td>Group</td>
-                    <td><input name="group" type="text" class="form-control" value="{{ .OneEx.Group }}"></td>
-                </tr>
-                <tr>
-                    <td>Place in group</td>
-                    <td><input name="place" type="number" class="form-control" value="{{ .OneEx.Place }}"></td>
-                </tr>
-                <tr>
-                    <td>Name</td>
-                    <td><input name="name" type="text" class="form-control" value="{{ .OneEx.Name }}"></td>
-                </tr>
-                <tr>
-                    <td>Description</td>
-                    <td><textarea name="descr" rows="3" class="form-control" value="{{ .OneEx.Descr }}">{{ .OneEx.Descr }}</textarea></td>
-                </tr>
-                <tr>
-                    <td>Image link</td>
-                    <td><input name="image" type="text" class="form-control" value="{{ .OneEx.Image }}"></td>
-                </tr>
-                <tr>
-                    <td>Weight (default)</td>
-                    <td><input name="weight" type="number" step="any" min="0" class="form-control" value="{{ .OneEx.Weight }}"></td>
-                </tr>
-                <tr>
-                    <td>Reps (default)</td>
-                    <td><input name="reps" type="number" min="0" class="form-control" value="{{ .OneEx.Reps }}"></td>
-                </tr>
-                <tr>
-                    <td><button type="submit" class="btn btn-primary">Save</button></td>
-            </form>
-            <form action="/exdel/" method="post">
-                <input name="id" type="hidden" value="{{ .OneEx.ID }}">
-                    <td>
-                        <button style="float: right;" type="submit" class="btn btn-danger">Delete</button>
-                    </td>
-            </form>
-                </tr>
-        </table>
+<div class="container-lg mt-4">
+  <div class="row">
+
+    <!-- Left column: Group management + Exercise form -->
+    <div class="col-md-4">
+
+      <!-- Groups card -->
+      <div class="card border-primary mb-4">
+        <div class="card-header">Groups</div>
+        <div class="card-body">
+          <form action="/group/" method="post" class="input-group mb-3">
+            <input name="name" type="text" class="form-control" placeholder="New group name...">
+            <button type="submit" class="btn btn-primary">Add</button>
+          </form>
+          {{ if .Groups }}
+          <ul class="list-group">
+            {{ range .Groups }}
+            <li class="list-group-item d-flex justify-content-between align-items-center py-1">
+              <span>{{ .Name }}</span>
+              <form action="/group/del/" method="post" class="m-0">
+                <input name="id" type="hidden" value="{{ .ID }}">
+                <button type="submit" class="btn btn-sm del-set-button" title="Delete group">
+                  <i class="bi bi-x-square"></i>
+                </button>
+              </form>
+            </li>
+            {{ end }}
+          </ul>
+          {{ end }}
         </div>
+      </div>
+
+      <!-- Exercise form card -->
+      <div class="card border-primary mb-4">
+        <div class="card-header">
+          {{ if .OneEx.ID }}Edit Exercise{{ else }}Add Exercise{{ end }}
         </div>
-        </div>
-        <div class="col-md">
-            <div class="card border-primary">
-                <div class="card-header">Image</div>
-                <div class="card-body">
-                    <img src="{{ .OneEx.Image }}" style="max-width: 100%;max-height: 100%;"></img>
-                </div>
+        <div class="card-body">
+          <form action="/exercise/" method="post">
+            <input name="id" type="hidden" value="{{ .OneEx.ID }}">
+            <table class="table table-borderless">
+              <tr>
+                <td>Group</td>
+                <td>
+                  <select name="group" class="form-select">
+                    {{ range $.Groups }}
+                    <option value="{{ .Name }}" {{ if eq $.OneEx.Group .Name }}selected{{ end }}>{{ .Name }}</option>
+                    {{ end }}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Name</td>
+                <td><input name="name" type="text" class="form-control" value="{{ .OneEx.Name }}"></td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td><textarea name="descr" rows="2" class="form-control">{{ .OneEx.Descr }}</textarea></td>
+              </tr>
+              <tr>
+                <td>Image link</td>
+                <td><input name="image" type="text" class="form-control" value="{{ .OneEx.Image }}"></td>
+              </tr>
+              <tr>
+                <td>Weight (default)</td>
+                <td><input name="weight" type="number" step="any" min="0" class="form-control" value="{{ .OneEx.Weight }}"></td>
+              </tr>
+              <tr>
+                <td>Reps (default)</td>
+                <td><input name="reps" type="number" min="0" class="form-control" value="{{ .OneEx.Reps }}"></td>
+              </tr>
+              <tr>
+                <td>Sets (default)</td>
+                <td><input name="sets" type="number" min="1" class="form-control" value="{{ if .OneEx.Sets }}{{ .OneEx.Sets }}{{ else }}3{{ end }}"></td>
+              </tr>
+            </table>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Save</button>
+              {{ if .OneEx.ID }}
+              <a href="/exercise/" class="btn btn-secondary">Cancel</a>
+              {{ end }}
             </div>
+          </form>
+          {{ if .OneEx.ID }}
+          <form action="/exdel/" method="post" class="mt-2">
+            <input name="id" type="hidden" value="{{ .OneEx.ID }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+          {{ end }}
         </div>
+      </div>
+
     </div>
+
+    <!-- Right column: Exercise order via drag and drop -->
+    <div class="col-md-8">
+      <div class="card border-primary mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Exercise Order</span>
+          <button id="saveOrderBtn" class="btn btn-primary btn-sm">Save Order</button>
+        </div>
+        <div class="card-body">
+          <form id="orderForm" action="/exercise/order/" method="post"></form>
+          <p class="text-muted small mb-3">
+            <i class="bi bi-grip-vertical"></i> Drag exercises to reorder within each group
+          </p>
+          {{ range .Groups }}
+          {{ $grName := .Name }}
+          {{ $grID := .ID }}
+          <div class="mb-4">
+            <h6 class="fw-bold border-bottom pb-1">{{ $grName }}</h6>
+            <ul class="list-group sortable-list" id="sort-{{ $grID }}">
+              {{ range $.ExData.Exs }}
+              {{ if eq .Group $grName }}
+              <li class="list-group-item d-flex justify-content-between align-items-center py-1"
+                  data-id="{{ .ID }}">
+                <span>
+                  <i class="bi bi-grip-vertical text-muted drag-handle me-1" style="cursor: grab;"></i>
+                  {{ .Name }}
+                </span>
+                <a href="/exercise/?id={{ .ID }}" class="btn btn-sm del-set-button" title="Edit">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+              </li>
+              {{ end }}
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+        </div>
+      </div>
     </div>
-        
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.sortable-list').forEach(function(el) {
+    Sortable.create(el, {
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'opacity-50'
+    });
+  });
+
+  document.getElementById('saveOrderBtn').addEventListener('click', function() {
+    var form = document.getElementById('orderForm');
+    form.innerHTML = '';
+    document.querySelectorAll('.sortable-list li').forEach(function(li) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'ids[]';
+      input.value = li.getAttribute('data-id');
+      form.appendChild(input);
+    });
+    form.submit();
+  });
+</script>
 
 {{ template "footer.html" }}
 {{ end }}

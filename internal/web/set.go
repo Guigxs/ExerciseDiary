@@ -24,11 +24,11 @@ func setHandler(c *gin.Context) {
 	formMap := c.Request.PostForm
 	// log.Println("MAP:", formMap)
 
-	len := len(formMap["name"])
-	// log.Println("LEN:", len)
+	nameCount := len(formMap["name"])
+	// log.Println("LEN:", nameCount)
 	date := formMap["date"][0]
 
-	for i := 0; i < len; i++ {
+	for i := 0; i < nameCount; i++ {
 		oneSet.Date = date
 		oneSet.Name = formMap["name"][i]
 		weight, _ = decimal.NewFromString(formMap["weight"][i])

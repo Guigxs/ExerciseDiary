@@ -16,6 +16,7 @@ func Get(path string) (config models.Conf, authConf auth.Conf) {
 	viper.SetDefault("THEME", "grass")
 	viper.SetDefault("COLOR", "light")
 	viper.SetDefault("HEATCOLOR", "#03a70c")
+	viper.SetDefault("DATEFORMAT", "DD/MM/YYYY")
 	viper.SetDefault("PAGESTEP", 10)
 
 	viper.SetDefault("AUTH_USER", "")
@@ -34,6 +35,7 @@ func Get(path string) (config models.Conf, authConf auth.Conf) {
 	config.Theme, _ = viper.Get("THEME").(string)
 	config.Color, _ = viper.Get("COLOR").(string)
 	config.HeatColor, _ = viper.Get("HEATCOLOR").(string)
+	config.DateFormat, _ = viper.Get("DATEFORMAT").(string)
 	config.PageStep = viper.GetInt("PAGESTEP")
 
 	authConf.Auth = viper.GetBool("AUTH")
@@ -58,6 +60,7 @@ func Write(config models.Conf, authConf auth.Conf) {
 	viper.Set("theme", config.Theme)
 	viper.Set("color", config.Color)
 	viper.Set("heatcolor", config.HeatColor)
+	viper.Set("dateformat", config.DateFormat)
 	viper.Set("pagestep", config.PageStep)
 
 	viper.Set("auth", authConf.Auth)

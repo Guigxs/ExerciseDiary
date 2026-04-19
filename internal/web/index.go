@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -23,9 +24,11 @@ func indexHandler(c *gin.Context) {
 	guiData.GroupMap = createGroupMap()
 	guiData.HeatMap = generateHeatMap()
 
-	// Sort exercises by Place
+	// Sort exercises by Place (numeric)
 	sort.Slice(guiData.ExData.Exs, func(i, j int) bool {
-		return guiData.ExData.Exs[i].Place < guiData.ExData.Exs[j].Place
+		pi, _ := strconv.Atoi(guiData.ExData.Exs[i].Place)
+		pj, _ := strconv.Atoi(guiData.ExData.Exs[j].Place)
+		return pi < pj
 	})
 
 	// Sort weight by Date

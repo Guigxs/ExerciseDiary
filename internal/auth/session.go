@@ -10,11 +10,13 @@ import (
 )
 
 // StartSession for new login
-func StartSession(c *gin.Context) {
+func StartSession(c *gin.Context, conf *Conf) {
 
 	sessionToken := uuid.NewString()
 
-	allSessions[sessionToken] = time.Now().Add(60 * time.Second)
+	sessionMu.Lock()
+	allSessions[sessionToken] = time.Now().Add(conf.Expire)
+	sessionMu.Unlock()
 
 	setTokenCookie(c, sessionToken)
 
@@ -26,7 +28,9 @@ func LogOut(c *gin.Context) {
 
 	sessionToken := getTokenFromCookie(c)
 
+	sessionMu.Lock()
 	delete(allSessions, sessionToken)
+	sessionMu.Unlock()
 
 	setTokenCookie(c, "")
 

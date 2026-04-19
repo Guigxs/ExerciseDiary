@@ -59,8 +59,15 @@ func Gui(dirPath, nodePath string) {
 	router.POST("/config/auth", auth.Auth(&authConf), saveConfigAuth)    // config.go
 	router.POST("/exercise/", auth.Auth(&authConf), saveExerciseHandler) // exercise.go
 	router.POST("/exdel/", auth.Auth(&authConf), deleteExerciseHandler)  // exercise.go
+	router.POST("/exercise/order/", auth.Auth(&authConf), saveOrderHandler) // exercise.go
+	router.POST("/group/", auth.Auth(&authConf), addGroupHandler)           // exercise.go
+	router.POST("/group/del/", auth.Auth(&authConf), deleteGroupHandler)    // exercise.go
 	router.POST("/set/", auth.Auth(&authConf), setHandler)               // set.go
 	router.POST("/weight/", auth.Auth(&authConf), addWeightHandler)      // weight.go
+	router.POST("/weight/del/", auth.Auth(&authConf), deleteWeightHandler) // weight.go
+
+	router.GET("/export/", auth.Auth(&authConf), exportHandler)   // export.go
+	router.POST("/import/", auth.Auth(&authConf), importHandler)  // export.go
 
 	err := router.Run(address)
 	check.IfError(err)

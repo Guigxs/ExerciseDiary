@@ -8,7 +8,13 @@ import (
 
 func setTokenCookie(c *gin.Context, token string) {
 
-	cookie := http.Cookie{Name: cookieName, Value: token, Path: "/"}
+	cookie := http.Cookie{
+		Name:     cookieName,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	}
 	http.SetCookie(c.Writer, &cookie)
 }
 

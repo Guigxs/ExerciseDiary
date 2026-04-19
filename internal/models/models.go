@@ -8,18 +8,19 @@ import (
 
 // Conf - web gui config
 type Conf struct {
-	Host      string
-	Port      string
-	Theme     string
-	Color     string
-	Icon      string
-	DBPath    string
-	DirPath   string
-	ConfPath  string
-	NodePath  string
-	HeatColor string
-	PageStep  int
-	Auth      bool
+	Host       string
+	Port       string
+	Theme      string
+	Color      string
+	Icon       string
+	DBPath     string
+	DirPath    string
+	ConfPath   string
+	NodePath   string
+	HeatColor  string
+	DateFormat string
+	PageStep   int
+	Auth       bool
 }
 
 // Exercise - one exercise
@@ -33,6 +34,7 @@ type Exercise struct {
 	Color  string          `db:"COLOR"`
 	Weight decimal.Decimal `db:"WEIGHT"`
 	Reps   int             `db:"REPS"`
+	Sets   int             `db:"SETS"`
 }
 
 // Set - one set
@@ -67,6 +69,12 @@ type BodyWeight struct {
 	Weight decimal.Decimal `db:"WEIGHT"`
 }
 
+// ExGroup - a named exercise group
+type ExGroup struct {
+	ID   int    `db:"ID"`
+	Name string `db:"NAME"`
+}
+
 // GuiData - web gui data
 type GuiData struct {
 	Config   Conf
@@ -77,4 +85,5 @@ type GuiData struct {
 	HeatMap  []HeatMapData
 	Version  string
 	Auth     auth.Conf
+	Groups   []ExGroup
 }

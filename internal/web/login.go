@@ -26,7 +26,7 @@ func loginHandler(c *gin.Context) {
 
 		log.Println("INFO: user '"+username+"' logged in. Session expire time", authConf.Expire)
 
-		auth.StartSession(c)
+		auth.StartSession(c, &authConf)
 
 	} else {
 
