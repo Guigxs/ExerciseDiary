@@ -175,3 +175,89 @@ function addGroupOnce(exs, gr) {
         }
     }
 };
+
+// ── KPI bar ──────────────────────────────────────────────────────────────────
+
+function initKPIs(sets) {
+    if (!sets || sets.length === 0) return;
+
+    let todayStr = new Date().toJSON().slice(0, 10);
+    let dateSets = {};   // date -> set count
+    let exSets   = {};   // exercise name -> total sets
+
+    for (let i = 0; i < sets.length; i++) {
+        let d = sets[i].Date;
+        dateSets[d] = (dateSets[d] || 0) + 1;
+        exSets[sets[i].Name] = (exSets[sets[i].Name] || 0) + 1;
+    }
+
+    // Streak: consecutive days going back from today (or yesterday if not trained today)
+    let streak = 0;
+    let cur = new Date();
+    if (!dateSets[todayStr]) cur.setDate(cur.getDate() - 1);
+    for (let i = 0; i < 3650; i++) {
+        let d = cur.toJSON().slice(0, 10);
+        if (dateSets[d]) { streak++; cur.setDate(cur.getDate() - 1); } else break;
+    }
+
+    // This week: training days + total sets in last 7 days
+    let weekDays = 0, weekSets = 0, todaySets = dateSets[todayStr] || 0;
+    for (let i = 0; i < 7; i++) {
+        let d = new Date(); d.setDate(d.getDate() - i);
+        let ds = d.toJSON().slice(0, 10);
+        if (dateSets[ds]) { weekDays++; weekSets += dateSets[ds]; }
+    }
+
+    // Last session (relative label)
+    let sortedDates = Object.keys(dateSets).sort();
+    let lastDate = sortedDates[sortedDates.length - 1];
+    let diffDays = Math.round((new Date(todayStr) - new Date(lastDate)) / 86400000);
+    let lastLabel = diffDays === 0 ? 'Today ✓'
+                  : diffDays === 1 ? 'Yesterday'
+                  : diffDays + 'd ago';
+
+    // Top exercise (most sets all-time)
+    let topEx = '', topCount = 0;
+    for (let ex in exSets) {
+        if (exSets[ex] > topCount) { topCount = exSets[ex]; topEx = ex; }
+    }
+
+    // Render
+    document.getElementById('kpi-streak').textContent   = streak + (streak >= 2 ? ' 🔥' : '');
+    document.getElementById('kpi-week').textContent     = weekDays + '/7';
+    document.getElementById('kpi-today').textContent    = todaySets;
+    document.getElementById('kpi-last').textContent     = lastLabel;
+    document.getElementById('kpi-top').textContent      = topEx || '—';
+    document.getElementById('kpi-row').style.display    = '';
+}
+
+// ── Exercise search ──────────────────────────────────────────────────────────
+
+function filterExercises(q) {
+    q = q.trim().toLowerCase();
+    document.querySelectorAll('.ex-item').forEach(function(item) {
+        let name = (item.getAttribute('data-exname') || '').toLowerCase();
+        item.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
+    document.querySelectorAll('.accordion-item').forEach(function(acc) {
+        if (!q) {
+            acc.style.display = '';
+            let col = acc.querySelector('.accordion-collapse');
+            let btn = acc.querySelector('.accordion-button');
+            if (col) col.classList.remove('show');
+            if (btn) btn.classList.add('collapsed');
+        } else {
+            let vis = 0;
+            acc.querySelectorAll('.ex-item').forEach(function(it) {
+                if (it.style.display !== 'none') vis++;
+            });
+            acc.style.display = vis ? '' : 'none';
+            if (vis) {
+                let col = acc.querySelector('.accordion-collapse');
+                let btn = acc.querySelector('.accordion-button');
+                if (col) col.classList.add('show');
+                if (btn) btn.classList.remove('collapsed');
+            }
+        }
+    });
+}

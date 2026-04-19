@@ -10,7 +10,7 @@
       <div class="card border-primary">
         <div class="card-body">
           <div class="horiz-scroll">
-              <div style="height: 100px; width: 770px;">
+              <div style="height: 160px; min-width: 770px; width: 100%;">
                   <canvas id="matrix-chart" style="height: 100%; width: 100%;"></canvas>
               </div>
           </div>
@@ -18,8 +18,52 @@
       </div>
     </div>
   </div>
+  <!-- KPI bar (hidden until JS renders it) -->
+  <div class="row" id="kpi-row" style="display:none;">
+    <div class="col mb-3">
+      <div class="row g-2">
+        <div class="col-6 col-sm-4 col-lg-2">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-fire"></i> Streak</div>
+            <div class="kpi-value" id="kpi-streak">—</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-calendar-week"></i> This week</div>
+            <div class="kpi-value" id="kpi-week">—</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-check2-circle"></i> Today sets</div>
+            <div class="kpi-value" id="kpi-today">—</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-clock-history"></i> Last session</div>
+            <div class="kpi-value kpi-value--sm" id="kpi-last">—</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-8 col-lg-4">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-trophy"></i> Most trained</div>
+            <div class="kpi-value kpi-value--sm" id="kpi-top">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <div class="row">
         <div class="col-md mb-4">
+            <div class="mb-2">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="search" class="form-control" id="ex-search" placeholder="Search exercise…" oninput="filterExercises(this.value)" autocomplete="off">
+              </div>
+            </div>
             <div class="accordion">
                 {{ range $gr, $grID := .GroupMap }}
                 <div class="accordion-item border-primary">
@@ -40,7 +84,7 @@
                         </div>
                         {{ range $.ExData.Exs }}
                         {{ if eq .Group $gr }}
-                        <div class="d-flex align-items-center gap-1 py-1">
+                        <div class="d-flex align-items-center gap-1 py-1 ex-item" data-exname="{{ .Name }}">
                             <a href="/exercise/?id={{ .ID }}"><button class="btn icon-btn" title="Edit">
                               <i class="bi bi-pencil-square"></i>
                             </button></a>
@@ -123,6 +167,7 @@
   gExs = {{ .ExData.Exs }};
   setFormDate({{ .ExData.Sets }});
   makeChart({{ .HeatMap }}, {{ .Config.HeatColor }}, {{ .ExData.Sets }});
+  initKPIs({{ .ExData.Sets }});
 </script>
 {{ template "footer.html" }}
 {{ end }}

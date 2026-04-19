@@ -37,11 +37,15 @@ function makeChart(heat, hcolor, sets) {
                 borderWidth: 1,
                 hoverBackgroundColor: 'lightgrey',
                 hoverBorderColor: 'grey',
-                width() {
-                    return 12;
+                width({ chart }) {
+                    const w = chart.chartArea ? chart.chartArea.width  : chart.width;
+                    const h = chart.chartArea ? chart.chartArea.height : chart.height;
+                    return Math.max(8, Math.min(Math.floor(w / 54) - 1, Math.floor(h / 7) - 1));
                 },
-                height() {
-                    return 12;
+                height({ chart }) {
+                    const w = chart.chartArea ? chart.chartArea.width  : chart.width;
+                    const h = chart.chartArea ? chart.chartArea.height : chart.height;
+                    return Math.max(8, Math.min(Math.floor(w / 54) - 1, Math.floor(h / 7) - 1));
                 }
             }]
         },

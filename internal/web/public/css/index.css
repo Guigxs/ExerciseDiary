@@ -1,3 +1,32 @@
+/* === KPI bar === */
+.kpi-card {
+    background: rgba(var(--bs-primary-rgb), 0.06);
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    height: 100%;
+}
+.kpi-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bs-secondary-color);
+    margin-bottom: 0.2rem;
+}
+.kpi-value {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--bs-primary);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kpi-value--sm {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
 /* === Accordion exercise list === */
 .icon-btn {
     background: transparent;
@@ -84,11 +113,11 @@
     background: rgba(220,53,69,0.08);
 }
 
-/* === Heatmap scroll === */
+/* === Heatmap scroll (only on small screens; expands full-width on desktop) === */
 @media (max-width: 1399px) {
     .horiz-scroll {
         direction: rtl;
-        overflow-x: scroll;
+        overflow-x: auto;
     }
 }
 
