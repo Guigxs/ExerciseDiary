@@ -30,9 +30,12 @@
                     </h2>
                     <div id="{{ $grID }}" class="accordion-collapse collapse">
                       <div class="accordion-body py-2">
-                        <div class="d-flex justify-content-end mb-1">
-                          <button class="btn btn-sm icon-btn px-2" style="font-size:0.85rem;" title="Add all to workout" onclick='addAllGroup({{ $.ExData.Exs }}, "{{ $gr }}")'>
+                        <div class="d-flex justify-content-end mb-1 gap-1">
+                          <button class="btn btn-sm icon-btn px-2" style="font-size:0.85rem;" title="Add all (full sets)" onclick='addAllGroup({{ $.ExData.Exs }}, "{{ $gr }}")'>  
                             <i class="bi bi-chevron-double-right"></i> Add all
+                          </button>
+                          <button class="btn btn-sm icon-btn px-2" style="font-size:0.85rem;" title="Add 1 set per exercise" onclick='addGroupOnce({{ $.ExData.Exs }}, "{{ $gr }}")'>  
+                            <i class="bi bi-plus-circle"></i> ×1 each
                           </button>
                         </div>
                         {{ range $.ExData.Exs }}
@@ -69,8 +72,11 @@
 </div>
 <!-- End Modal -->
                             <button class="btn ex-name-btn flex-grow-1" onclick='addExercise("{{ .Name }}", "{{ .Weight }}", "{{ .Reps }}", {{ .Sets }})' title="{{ .Sets }}× {{ .Reps }} @ {{ .Weight }}">{{ .Name }}</button>
-                            <button class="btn icon-btn" onclick='addExercise("{{ .Name }}", "{{ .Weight }}", "{{ .Reps }}", {{ .Sets }})' title="Add">
+                            <button class="btn icon-btn" onclick='addExercise("{{ .Name }}", "{{ .Weight }}", "{{ .Reps }}", {{ .Sets }})' title="Add {{ .Sets }} sets">
                                 <i class="bi bi-plus-square"></i>
+                            </button>
+                            <button class="btn icon-btn" onclick='addExercise("{{ .Name }}", "{{ .Weight }}", "{{ .Reps }}", 1)' title="Add 1 set">
+                                <i class="bi bi-plus-circle"></i>
                             </button>
                         </div>
                         {{ end }}
@@ -114,6 +120,7 @@
 </div>
 
 <script>
+  gExs = {{ .ExData.Exs }};
   setFormDate({{ .ExData.Sets }});
   makeChart({{ .HeatMap }}, {{ .Config.HeatColor }}, {{ .ExData.Sets }});
 </script>

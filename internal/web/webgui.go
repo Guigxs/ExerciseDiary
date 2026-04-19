@@ -69,6 +69,10 @@ func Gui(dirPath, nodePath string) {
 	router.GET("/export/", auth.Auth(&authConf), exportHandler)   // export.go
 	router.POST("/import/", auth.Auth(&authConf), importHandler)  // export.go
 
+	router.GET("/backup/", auth.Auth(&authConf), backupHandler)              // backup.go
+	router.GET("/backup/export/", auth.Auth(&authConf), backupExportHandler) // backup.go
+	router.POST("/backup/import/", auth.Auth(&authConf), backupImportHandler) // backup.go
+
 	err := router.Run(address)
 	check.IfError(err)
 }

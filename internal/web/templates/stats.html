@@ -10,10 +10,21 @@
         <div class="card border-primary mb-4">
             <div class="card-body py-2">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <div class="flex-grow-1" style="min-width: 160px;">
-                        <select class="form-select" id="ex-value" onchange='sOffset=0; setStatsPage({{ .ExData.Sets }}, {{ .Config.HeatColor }}, 0, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}");'>
+                    <div class="btn-group me-1" role="group">
+                        <button id="mode-ex-btn" class="btn btn-primary btn-sm" onclick="setStatsMode('exercise')">Exercise</button>
+                        <button id="mode-gr-btn" class="btn btn-outline-primary btn-sm" onclick="setStatsMode('group')">Group</button>
+                    </div>
+                    <div id="sel-ex-wrap" class="flex-grow-1" style="min-width: 160px;">
+                        <select class="form-select" id="ex-value" onchange='sOffset=0; setStatsPage(gSets, gHcolor, 0, gStep, gDateFmt);'>
                             {{ range $gr := .GroupMap }}
                             <option value="{{ $gr }}">{{ $gr }}</option>
+                            {{ end }}
+                        </select>
+                    </div>
+                    <div id="sel-gr-wrap" style="display:none; min-width: 160px;" class="flex-grow-1">
+                        <select class="form-select" id="gr-value" onchange="renderGroupStats();">
+                            {{ range .Groups }}
+                            <option>{{ .Name }}</option>
                             {{ end }}
                         </select>
                     </div>
@@ -60,19 +71,21 @@
                 <div class="card border-primary">
                     <div class="card-header">History</div>
                     <div class="card-body">
-                        <table class="table table-borderless">
-                            <thead>
-                                <th class="col-1"></th>
-                                <th class="col-4">Date</th>
-                                <th class="col-3">Reps</th>
-                                <th class="col-3">Weight</th>
-                            </thead>
-                            <tbody id="stats-table">
-                            </tbody>
-                        </table>
-                        <div class="gap-3 hstack">
-                            <button onclick='setStatsPage({{ .ExData.Sets }}, {{ .Config.HeatColor }}, 1, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}");' class="m-auto btn del-set-button"><i class="bi bi-arrow-left-square"></i></button>
-                            <button onclick='setStatsPage({{ .ExData.Sets }}, {{ .Config.HeatColor }}, -1, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}");' class="m-auto btn del-set-button"><i class="bi bi-arrow-right-square"></i></button>
+                        <div id="stats-table-wrap">
+                            <table class="table table-borderless">
+                                <thead>
+                                    <th class="col-1"></th>
+                                    <th class="col-4">Date</th>
+                                    <th class="col-3">Reps</th>
+                                    <th class="col-3">Weight</th>
+                                </thead>
+                                <tbody id="stats-table">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="stats-pagination" class="gap-3 hstack">
+                            <button onclick='setStatsPage(gSets, gHcolor, 1, gStep, gDateFmt);' class="m-auto btn del-set-button"><i class="bi bi-arrow-left-square"></i></button>
+                            <button onclick='setStatsPage(gSets, gHcolor, -1, gStep, gDateFmt);' class="m-auto btn del-set-button"><i class="bi bi-arrow-right-square"></i></button>
                         </div>
                     </div>
                 </div>
@@ -95,7 +108,7 @@
     </div>
         
 <script>
-   setStatsPage({{ .ExData.Sets }}, {{ .Config.HeatColor }}, 0, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}");
+   initStats({{ .ExData.Sets }}, {{ .Config.HeatColor }}, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}", {{ .ExData.Exs }});
 </script>
 
 {{ template "footer.html" }}

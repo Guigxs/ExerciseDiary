@@ -70,7 +70,7 @@
               </tr>
               <tr>
                 <td>Reps (default)</td>
-                <td><input name="reps" type="number" min="0" class="form-control" value="{{ .OneEx.Reps }}"></td>
+                <td><input name="reps" type="number" min="0" class="form-control" value="{{ if .OneEx.ID }}{{ .OneEx.Reps }}{{ else }}10{{ end }}"></td>
               </tr>
               <tr>
                 <td>Sets (default)</td>
@@ -117,13 +117,21 @@
               {{ if eq .Group $grName }}
               <li class="list-group-item d-flex justify-content-between align-items-center py-1"
                   data-id="{{ .ID }}">
-                <span>
+                <span class="text-truncate me-2">
                   <i class="bi bi-grip-vertical text-muted drag-handle me-1" style="cursor: grab;"></i>
                   {{ .Name }}
                 </span>
-                <a href="/exercise/?id={{ .ID }}" class="btn btn-sm del-set-button" title="Edit">
-                  <i class="bi bi-pencil-square"></i>
-                </a>
+                <div class="d-flex gap-1 flex-shrink-0">
+                  <a href="/exercise/?id={{ .ID }}" class="btn btn-sm del-set-button" title="Edit">
+                    <i class="bi bi-pencil-square"></i>
+                  </a>
+                  <form action="/exdel/" method="post" class="m-0" onsubmit="return confirm('Remove {{ .Name }}?')">
+                    <input name="id" type="hidden" value="{{ .ID }}">
+                    <button type="submit" class="btn btn-sm del-set-button" title="Remove exercise">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
               </li>
               {{ end }}
               {{ end }}

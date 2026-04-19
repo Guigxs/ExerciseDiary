@@ -105,6 +105,16 @@ func DeleteGroup(path string, id int) {
 	exec(path, `DELETE FROM groups WHERE ID = ?;`, id)
 }
 
+// ClearW - delete all body weight records
+func ClearW(path string) {
+	exec(path, `DELETE FROM weight;`)
+}
+
+// ClearGroups - delete all groups
+func ClearGroups(path string) {
+	exec(path, `DELETE FROM groups;`)
+}
+
 // UpdateExPlace - update the place (order) of an exercise
 func UpdateExPlace(path string, id, place int) {
 	exec(path, `UPDATE exercises SET PLACE = ? WHERE ID = ?;`, place, id)
