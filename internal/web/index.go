@@ -20,6 +20,7 @@ func indexHandler(c *gin.Context) {
 	exData.Weight = db.SelectW(appConfig.DBPath)
 
 	guiData.Config = appConfig
+	guiData.Version = appVersion
 	guiData.ExData = exData
 	guiData.GroupMap = createGroupMap()
 	guiData.HeatMap = generateHeatMap()

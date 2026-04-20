@@ -111,5 +111,5 @@
    initStats({{ .ExData.Sets }}, {{ .Config.HeatColor }}, {{ .Config.PageStep }}, "{{ .Config.DateFormat }}", {{ .ExData.Exs }});
 </script>
 
-{{ template "footer.html" }}
+{{ template "footer.html" . }}
 {{ end }}

@@ -16,6 +16,9 @@ var (
 
 	// Exercise data
 	exData models.AllExData
+
+	// appVersion - read once at startup
+	appVersion string
 )
 
 // templFS - html templates

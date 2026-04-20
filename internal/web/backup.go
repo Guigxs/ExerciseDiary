@@ -21,6 +21,7 @@ type fullBackupData struct {
 func backupHandler(c *gin.Context) {
 	var guiData models.GuiData
 	guiData.Config = appConfig
+	guiData.Version = appVersion
 	c.HTML(http.StatusOK, "header.html", guiData)
 	c.HTML(http.StatusOK, "backup.html", guiData)
 }

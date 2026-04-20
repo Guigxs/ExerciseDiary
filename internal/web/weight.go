@@ -43,6 +43,7 @@ func weightHandler(c *gin.Context) {
 	exData.Weight = db.SelectW(appConfig.DBPath)
 
 	guiData.Config = appConfig
+	guiData.Version = appVersion
 	guiData.ExData = exData
 
 	// Sort weight by Date

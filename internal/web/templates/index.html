@@ -170,5 +170,5 @@
   makeChart({{ .HeatMap }}, {{ .Config.HeatColor }}, {{ .ExData.Sets }});
   initKPIs({{ .ExData.Sets }});
 </script>
-{{ template "footer.html" }}
+{{ template "footer.html" . }}
 {{ end }}

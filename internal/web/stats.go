@@ -18,6 +18,7 @@ func statsHandler(c *gin.Context) {
 	guiData.ExData.Exs = db.SelectEx(appConfig.DBPath)
 	guiData.Groups = db.SelectGroups(appConfig.DBPath)
 	guiData.Config = appConfig
+	guiData.Version = appVersion
 
 	guiData.GroupMap = make(map[string]string)
 

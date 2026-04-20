@@ -32,6 +32,15 @@ func Gui(dirPath, nodePath string) {
 
 	db.Create(appConfig.DBPath)
 
+	file, err := pubFS.ReadFile("public/version")
+	check.IfError(err)
+	v := string(file)
+	if len(v) > 8 {
+		appVersion = v[8:]
+	} else {
+		appVersion = v
+	}
+
 	address := appConfig.Host + ":" + appConfig.Port
 
 	log.Println("=================================== ")
@@ -73,6 +82,6 @@ func Gui(dirPath, nodePath string) {
 	router.GET("/backup/export/", auth.Auth(&authConf), backupExportHandler) // backup.go
 	router.POST("/backup/import/", auth.Auth(&authConf), backupImportHandler) // backup.go
 
-	err := router.Run(address)
+	err = router.Run(address)
 	check.IfError(err)
 }

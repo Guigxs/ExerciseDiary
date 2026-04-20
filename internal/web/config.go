@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/aceberg/ExerciseDiary/internal/auth"
-	"github.com/aceberg/ExerciseDiary/internal/check"
 	"github.com/aceberg/ExerciseDiary/internal/conf"
 	"github.com/aceberg/ExerciseDiary/internal/models"
 )
@@ -18,13 +17,9 @@ func configHandler(c *gin.Context) {
 
 	guiData.Config = appConfig
 	guiData.Auth = authConf
+	guiData.Version = appVersion
 
 	guiData.Themes = []string{"cerulean", "cosmo", "cyborg", "darkly", "emerald", "flatly", "grass", "grayscale", "journal", "litera", "lumen", "lux", "materia", "minty", "morph", "ocean", "pulse", "quartz", "sand", "sandstone", "simplex", "sketchy", "slate", "solar", "spacelab", "superhero", "united", "vapor", "wood", "yeti", "zephyr"}
-
-	file, err := pubFS.ReadFile("public/version")
-	check.IfError(err)
-	version := string(file)
-	guiData.Version = version[8:]
 
 	c.HTML(http.StatusOK, "header.html", guiData)
 	c.HTML(http.StatusOK, "config.html", guiData)

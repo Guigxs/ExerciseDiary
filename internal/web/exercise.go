@@ -26,6 +26,7 @@ func exerciseHandler(c *gin.Context) {
 	})
 
 	guiData.Config = appConfig
+	guiData.Version = appVersion
 	guiData.ExData = exData
 	guiData.Groups = db.SelectGroups(appConfig.DBPath)
 

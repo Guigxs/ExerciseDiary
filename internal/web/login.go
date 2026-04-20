@@ -31,6 +31,7 @@ func loginHandler(c *gin.Context) {
 	} else {
 
 		guiData.Config = appConfig
+		guiData.Version = appVersion
 
 		c.HTML(http.StatusOK, "header.html", guiData)
 		c.HTML(http.StatusOK, "login.html", guiData)
