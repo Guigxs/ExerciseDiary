@@ -64,11 +64,13 @@ function stepValue(inputId, delta) {
     el.value = newVal;
 }
 
-function addExercise(name, weight, reps, sets) {
-    let last = getLastUsed(name);
-    if (last) {
-        weight = last.Weight;
-        reps = last.Reps;
+function addExercise(name, weight, reps, sets, raw) {
+    if (!raw) {
+        let last = getLastUsed(name);
+        if (last) {
+            weight = last.Weight;
+            reps = last.Reps;
+        }
     }
     let numSets = parseInt(sets) || 1;
     let color = getGroupColor(name);
@@ -142,7 +144,7 @@ function setFormContent(sets, date) {
         }
         let grSets = byGroup[gr];
         for (let i = 0; i < grSets.length; i++) {
-            addExercise(grSets[i].Name, grSets[i].Weight, grSets[i].Reps, 1);
+            addExercise(grSets[i].Name, grSets[i].Weight, grSets[i].Reps, 1, true);
         }
     }
 };
