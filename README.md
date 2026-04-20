@@ -89,6 +89,14 @@ The JSON format is:
 }
 ```
 
+## Debug
+
+To build and run thhe project without docker, you can run:
+
+```sh
+go build ./... && go run ./cmd/ExerciseDiary/main.go -d /tmp
+```
+
 ## Local network only
 
 By default, the app pulls themes, icons and fonts from the internet. For an air-gapped setup, use the companion [node-bootstrap](https://github.com/aceberg/my-dockerfiles/tree/main/node-bootstrap) image and [docker-compose-local.yml](docker-compose-local.yml):

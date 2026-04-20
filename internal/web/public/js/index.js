@@ -79,25 +79,28 @@ function addExercise(name, weight, reps, sets, raw) {
         id = id + 1;
         let wId = 'w' + id;
         let rId = 'r' + id;
-        let html_to_insert = '<div class="ex-card" id="' + id + '" style="' + borderStyle + '">'
-          + '<div class="ex-card-header">'
-          + '<span class="ex-card-title">' + name + '</span>'
+        let html_to_insert = '<div class="ex-row" id="' + id + '" style="' + borderStyle + '">'
           + '<input name="name" type="hidden" value="' + name + '">'
-          + '<button class="btn btn-del-row" type="button" title="Remove" onclick="delExercise(' + id + ')">'
-          + '<i class="bi bi-x-lg"></i></button></div>'
-          + '<div class="ex-card-controls">'
-          + '<div class="ex-card-field"><span class="ex-card-label">Weight</span>'
+          + '<span class="ex-row-name" title="' + name + '">' + name + '</span>'
+          + '<div class="ex-row-controls">'
+          + '<div class="ex-row-field">'
+          + '<span class="ex-row-label">kg</span>'
           + '<div class="d-flex align-items-center gap-1">'
           + '<button class="btn btn-adj" type="button" onclick="stepValue(\'' + wId + '\',-1)">−</button>'
           + '<input id="' + wId + '" name="weight" type="number" step="any" min="0" class="form-control form-control-sm text-center adj-val" value="' + weight + '">'
           + '<button class="btn btn-adj" type="button" onclick="stepValue(\'' + wId + '\',1)">+</button>'
           + '</div></div>'
-          + '<div class="ex-card-field"><span class="ex-card-label">Reps</span>'
+          + '<span class="ex-row-sep">×</span>'
+          + '<div class="ex-row-field">'
+          + '<span class="ex-row-label">reps</span>'
           + '<div class="d-flex align-items-center gap-1">'
           + '<button class="btn btn-adj" type="button" onclick="stepValue(\'' + rId + '\',-1)">−</button>'
           + '<input id="' + rId + '" name="reps" type="number" step="1" min="0" class="form-control form-control-sm text-center adj-val" value="' + reps + '">'
           + '<button class="btn btn-adj" type="button" onclick="stepValue(\'' + rId + '\',1)">+</button>'
-          + '</div></div></div></div>';
+          + '</div></div>'
+          + '<button class="btn btn-del-row" type="button" title="Remove" onclick="delExercise(' + id + ')">'
+          + '<i class="bi bi-x-lg"></i></button>'
+          + '</div></div>';
         document.getElementById('todayEx').insertAdjacentHTML('beforeend', html_to_insert);
     }
 };
