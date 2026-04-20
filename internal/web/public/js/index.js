@@ -1,6 +1,21 @@
 var id = 0;
 var today = null;
 var gExs = null;
+var gSets = null;
+
+// Returns the most-recently-dated {Weight, Reps} for an exercise name, or null.
+function getLastUsed(name) {
+    if (!gSets) return null;
+    let best = null;
+    for (let i = 0; i < gSets.length; i++) {
+        let s = gSets[i];
+        if (s.Name !== name) continue;
+        if (!best || s.Date > best.Date || (s.Date === best.Date && i > best.idx)) {
+            best = { Weight: s.Weight, Reps: s.Reps, Date: s.Date, idx: i };
+        }
+    }
+    return best;
+}
 
 // Consistent group colour palette
 const GROUP_COLORS = [
@@ -50,6 +65,11 @@ function stepValue(inputId, delta) {
 }
 
 function addExercise(name, weight, reps, sets) {
+    let last = getLastUsed(name);
+    if (last) {
+        weight = last.Weight;
+        reps = last.Reps;
+    }
     let numSets = parseInt(sets) || 1;
     let color = getGroupColor(name);
     let borderStyle = color ? 'border-left: 3px solid ' + color + ';' : '';

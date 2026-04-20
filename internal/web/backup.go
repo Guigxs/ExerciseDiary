@@ -85,5 +85,5 @@ func backupImportHandler(c *gin.Context) {
 	exData.Sets = db.SelectSet(appConfig.DBPath)
 	exData.Weight = db.SelectW(appConfig.DBPath)
 
-	c.Redirect(http.StatusFound, "/backup/?restored=1")
+	c.Redirect(http.StatusFound, "/config?restored=1")
 }
