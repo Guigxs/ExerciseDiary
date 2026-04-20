@@ -64,7 +64,24 @@ function stepValue(inputId, delta) {
     el.value = newVal;
 }
 
-function addExercise(name, weight, reps, sets, raw) {
+function grHeaderId(gr) {
+    return 'grh-' + gr.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function insertGroupHeader(gr) {
+    let hid = grHeaderId(gr);
+    if (document.getElementById(hid)) return; // already present
+    let grOrder = groupOrder();
+    let idx = grOrder.indexOf(gr);
+    let color = idx >= 0 ? GROUP_COLORS[idx % GROUP_COLORS.length] : '#6c757d';
+    document.getElementById('todayEx').insertAdjacentHTML('beforeend',
+        '<div class="ex-group-header" id="' + hid + '" style="border-left-color:' + color + '">'
+        + '<span>' + gr + '</span>'
+        + '<button class="btn btn-del-group" type="button" title="Remove group" onclick="delGroup(\'' + hid + '\',\'' + gr + '\')">'        + '<i class="bi bi-trash3"></i></button>'
+        + '</div>');
+}
+
+function addExercise(name, weight, reps, sets, raw, gr) {
     if (!raw) {
         let last = getLastUsed(name);
         if (last) {
@@ -72,6 +89,14 @@ function addExercise(name, weight, reps, sets, raw) {
             reps = last.Reps;
         }
     }
+    if (!gr) {
+        if (gExs) {
+            for (let i = 0; i < gExs.length; i++) {
+                if (gExs[i].Name === name) { gr = gExs[i].Group; break; }
+            }
+        }
+    }
+    if (gr) insertGroupHeader(gr);
     let numSets = parseInt(sets) || 1;
     let color = getGroupColor(name);
     let borderStyle = color ? 'border-left: 3px solid ' + color + ';' : '';
@@ -79,7 +104,8 @@ function addExercise(name, weight, reps, sets, raw) {
         id = id + 1;
         let wId = 'w' + id;
         let rId = 'r' + id;
-        let html_to_insert = '<div class="ex-row" id="' + id + '" style="' + borderStyle + '">'
+        let grAttr = gr ? ' data-group="' + gr + '"' : '';
+        let html_to_insert = '<div class="ex-row" id="' + id + '"' + grAttr + ' style="' + borderStyle + '">'
           + '<input name="name" type="hidden" value="' + name + '">'
           + '<span class="ex-row-name" title="' + name + '">' + name + '</span>'
           + '<div class="ex-row-controls">'
@@ -99,8 +125,9 @@ function addExercise(name, weight, reps, sets, raw) {
           + '<button class="btn btn-adj" type="button" onclick="stepValue(\'' + rId + '\',1)">+</button>'
           + '</div></div>'
           + '<button class="btn btn-del-row" type="button" title="Remove" onclick="delExercise(' + id + ')">'
-          + '<i class="bi bi-x-lg"></i></button>'
-          + '</div></div>';
+          + '<i class="bi bi-trash3"></i></button>'
+          + '</div>'
+          + '</div>';
         document.getElementById('todayEx').insertAdjacentHTML('beforeend', html_to_insert);
     }
 };
@@ -139,15 +166,9 @@ function setFormContent(sets, date) {
 
     for (let gi = 0; gi < renderOrder.length; gi++) {
         let gr = renderOrder[gi];
-        if (showHeaders && gr) {
-            let idx = grOrder.indexOf(gr);
-            let color = idx >= 0 ? GROUP_COLORS[idx % GROUP_COLORS.length] : '#6c757d';
-            document.getElementById('todayEx').insertAdjacentHTML('beforeend',
-                '<div class="ex-group-header" style="border-left-color:' + color + '">' + gr + '</div>');
-        }
         let grSets = byGroup[gr];
         for (let i = 0; i < grSets.length; i++) {
-            addExercise(grSets[i].Name, grSets[i].Weight, grSets[i].Reps, 1, true);
+            addExercise(grSets[i].Name, grSets[i].Weight, grSets[i].Reps, 1, true, gr || undefined);
         }
     }
 };
@@ -161,7 +182,23 @@ function setFormDate(sets) {
 };
 
 function delExercise(exID) {
-    document.getElementById(exID).remove();
+    let el = document.getElementById(exID);
+    let gr = el ? el.getAttribute('data-group') : null;
+    if (el) el.remove();
+    // remove orphan group header if no rows left for this group
+    if (gr) {
+        let remaining = document.querySelectorAll('#todayEx [data-group="' + gr + '"]');
+        if (remaining.length === 0) {
+            let hdr = document.getElementById(grHeaderId(gr));
+            if (hdr) hdr.remove();
+        }
+    }
+};
+
+function delGroup(hid, gr) {
+    document.querySelectorAll('#todayEx [data-group="' + gr + '"]').forEach(function(el) { el.remove(); });
+    let hdr = document.getElementById(hid);
+    if (hdr) hdr.remove();
 };
 
 function goToToday(sets) {
@@ -184,7 +221,7 @@ function addAllGroup(exs, gr) {
     if (exs) {
         for (let i = 0; i < exs.length; i++) {
             if (exs[i].Group == gr) {
-                addExercise(exs[i].Name, exs[i].Weight, exs[i].Reps, exs[i].Sets);
+                addExercise(exs[i].Name, exs[i].Weight, exs[i].Reps, exs[i].Sets, false, gr);
             }
         }
     }
@@ -195,7 +232,7 @@ function addGroupOnce(exs, gr) {
     if (exs) {
         for (let i = 0; i < exs.length; i++) {
             if (exs[i].Group == gr) {
-                addExercise(exs[i].Name, exs[i].Weight, exs[i].Reps, 1);
+                addExercise(exs[i].Name, exs[i].Weight, exs[i].Reps, 1, false, gr);
             }
         }
     }
